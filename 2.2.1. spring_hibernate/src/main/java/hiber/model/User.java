@@ -1,6 +1,9 @@
 package hiber.model;
 
+import org.hibernate.annotations.Cascade;
+
 import javax.persistence.*;
+import java.util.Objects;
 
 @Entity
 @Table(name = "users")
@@ -9,6 +12,10 @@ public class User {
    @Id
    @GeneratedValue(strategy = GenerationType.IDENTITY)
    private Long id;
+
+   @OneToOne
+   @JoinColumn(name = "car_id",unique = true)
+   private Car car;
 
    @Column(name = "name")
    private String firstName;
@@ -58,4 +65,29 @@ public class User {
    public void setEmail(String email) {
       this.email = email;
    }
+
+   public void setCar(Car car) {
+      this.car = car;
+   }
+
+   public Car getCar() {
+      if (car == null) {
+         car = new Car();
+      }
+      return car;
+   }
+   @Override
+   public boolean equals(Object obj) {
+      if (this == obj) {
+         return true;
+      }
+      if (obj == null || getClass() != obj.getClass()) {
+         return false;
+      }
+      User user = (User) obj;
+      return Objects.equals(firstName, user.firstName) &&
+              Objects.equals(lastName, user.lastName) &&
+              Objects.equals(email, user.email);
+   }
+
 }
