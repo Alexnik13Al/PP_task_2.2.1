@@ -5,11 +5,9 @@ import hiber.model.User;
 import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
-import javax.persistence.NoResultException;
-import javax.persistence.NonUniqueResultException;
-import javax.persistence.Query;
-import javax.persistence.TypedQuery;
+import javax.persistence.*;
 import java.util.List;
 
 @Repository
@@ -17,6 +15,8 @@ public class UserDaoImp implements UserDao {
 
     @Autowired
     private SessionFactory sessionFactory;
+    @PersistenceContext
+    private EntityManager entityManager;
 
     @Override
     public void add(User user, String carModel, int carSeries) {
@@ -46,6 +46,21 @@ public class UserDaoImp implements UserDao {
             return (User) query.getSingleResult();
         } catch (NonUniqueResultException | NoResultException e) {
             return null;
+        }
+    }
+
+    @Override
+    public User getUserByCarModelAndSeries(String model, int series) {
+        String hql = "SELECT u FROM User u JOIN u.car c WHERE c.model = :model AND c.series = :series";
+        TypedQuery<User> query = entityManager.createQuery(hql, User.class)
+                .setParameter("model", model)
+                .setParameter("series", series);
+
+        try {
+            User user = query.getSingleResult();
+            return user != null ? user : new User();
+        } catch (NonUniqueResultException | NoResultException e) {
+            return new User();
         }
     }
 

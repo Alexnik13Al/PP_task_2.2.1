@@ -10,4 +10,6 @@ public interface UserDao {
     List<User> listUsers();
 
     User getUserByAllParams(String firstName, String lastName, String email);
+
+    User getUserByCarModelAndSeries(String model, int series);
 }

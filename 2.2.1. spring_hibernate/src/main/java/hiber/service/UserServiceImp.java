@@ -16,8 +16,6 @@ public class UserServiceImp implements UserService {
     @Autowired
     private UserDao userDao;
 
-    @PersistenceContext
-    private EntityManager entityManager;
 
     @Transactional
     @Override
@@ -37,19 +35,8 @@ public class UserServiceImp implements UserService {
         return userDao.listUsers();
     }
 
-    @Transactional
-    public User getUserByCarModelAndSeries(String model, int series) {
-        String hql = "SELECT u FROM User u JOIN u.car c WHERE c.model = :model AND c.series = :series";
-        TypedQuery<User> query = entityManager.createQuery(hql, User.class)
-                .setParameter("model", model)
-                .setParameter("series", series);
-
-        try {
-            User user = query.getSingleResult();
-            return user != null ? user : new User();
-        } catch (NonUniqueResultException | NoResultException e) {
-            return new User();
-        }
+    @Override
+    public User getUserByCarModelAndSeries(String carModel, int carSeries) {
+        return userDao.getUserByCarModelAndSeries(carModel, carSeries);
     }
-
 }
